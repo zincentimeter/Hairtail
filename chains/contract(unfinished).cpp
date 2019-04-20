@@ -10,6 +10,8 @@
 #include <graphenelib/types.h>
 
 #include<cmath>
+#include<map>
+#include<iostream>
 
 using namespace graphene;
 
@@ -21,34 +23,55 @@ class module : public contract
         , data(_self, _self)
     {
     }
-
-    // @abi action
+	
+  	std::map<std::string, uint64_t> address;
+  	
+  	
     // not at abi payable
-    void push(std::string domain, uint32_t pv, uint32_t uv) {
-    	uint32_t timestamp = get_head_block_time();
+    // @abi action
+    void push(std::string domain, uint32_t page_v, uint32_t unique_v) {
+    	uint32_t time_stamp = get_head_block_time();
     	uint64_t owner = get_trx_sender();
     	auto it = data.find(owner);
     	if (it == data.end()) {
     		data.emplace(owner, [&](auto &o) {
-    			graphene_assert(o.page_v.empty(), "Ruaaaaa");
-    			graphene_assert(o.unique_v.empty(), "Ruaaa");
+    			graphene_assert(o.pv.empty(), "Rua");
+    			graphene_assert(o.uv.empty(), "2Rua2");
 	            o.publisher = owner;
 	            o.domain = domain;
-	            o.page_v.emplace_back(pv);
-	            o.unique_v.emplace_back(uv);
-	            o.timestamp = timestamp;
+	            o.pv.emplace_back(page_v);
+	            o.uv.emplace_back(unique_v);
+	            o.timestamp.emplace_back(time_stamp);
+	            address[domain] = owner;
 	        });
 		}
     	else {
     		data.modify(it, 0, [&](auto &o) {
     			graphene_assert(o.publisher == owner, "foooo");
-    			graphene_assert(o.domain == domain, "foooooo");
-    			o.page_v.emplace_back(pv);
-    			o.unique_v.emplace_back(uv);
-	            o.timestamp = timestamp;
+    			graphene_assert(o.domain == domain, "3foooooo3");
+    			o.pv.emplace_back(page_v);
+    			o.uv.emplace_back(unique_v);
+	            o.timestamp.emplace_back(time_stamp);
 			});
 		}
-		printf("%d %d %d\n",pv,uv,timestamp);
+		printf("%d %d %d %d ",page_v,unique_v,time_stamp,address[domain]);
+		//print(domain,"\n");
+	}
+    
+    // @abi action
+    void pull(std::string domain, const uint32_t BEGIN, const uint32_t END) {//counted in second
+    	vector<uint32_t> x, y1, y2; //timestamp, pv, uv
+    	uint64_t refer = address[domain];
+    	auto it = data.find(refer);
+    	graphene_assert(it != data.end(), "No Result! ");
+    	uint32_t cnt = 0, now;
+    	for (;it->timestamp[cnt] < BEGIN; ++cnt);
+    	for (now=cnt; BEGIN<=it->timestamp[now] && it->timestamp[now]<=END; ++now) {
+    		x[now-cnt] = it->timestamp[now];
+    		y1[now-cnt] = it->pv[now];
+    		y2[now-cnt] = it->uv[now];
+		}
+		for (uint32_t i=0; i<=now-cnt; ++i) printf("[%u, %u, %u] ",x[i], y1[i], y2[i]);
 	}
     
   private:
@@ -56,14 +79,13 @@ class module : public contract
     struct datum {
         uint64_t                publisher;
         std::string             domain;
-        contract_asset          total_amount;
-        std::vector<uint32_t>   page_v;
-        std::vector<uint32_t>   unique_v;
-        uint32_t                timestamp;
+        std::vector<uint32_t>   pv;
+        std::vector<uint32_t>   uv;
+        std::vector<uint32_t>   timestamp;
 
         uint64_t primary_key() const { return publisher; }
 
-        GRAPHENE_SERIALIZE(datum, (publisher)(domain)(total_amount)(page_v)(unique_v))
+        GRAPHENE_SERIALIZE(datum, (publisher)(domain)(pv)(uv)(timestamp))
     };
     typedef graphene::multi_index<N(datum), datum> datum_index;    //**********
 
@@ -77,5 +99,5 @@ class module : public contract
     datum_index     data;
 };
 
-GRAPHENE_ABI(module, (push))
+GRAPHENE_ABI(module, (push)(pull))
 
