@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>WebDAU</title>
+	</head>
+	<body>
+		<script>
+		    // 拿到输入的值，输出到指定ID的元素中
+		    function outPut(){
+				date = document.getElementById("datepicker").value;
+				website = document.getElementById("Website").value;
+				document.write("查询结果：在",date,"您查询的网站",website,"的访问量为：",23333);
+		    }
+		</script>
+		
+		<p>请输入查询网址：<p>
+		<input type="text" id="Website" value=""/><br>
+		<p>请选择查询日期：<p>
+		<input type="text" id="datepicker">
+
+		<button onclick="outPut()">确认</button>
+	</body>
+	
+	<link rel="stylesheet" href="http://dbushell.github.com/Pikaday/css/pikaday.css">
+	<script src="http://dbushell.github.com/Pikaday/pikaday.js"></script>
+	<script>
+	var picker = new Pikaday({ field: document.getElementById('datepicker') });
+	</script>
+</html>
