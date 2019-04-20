@@ -2,19 +2,220 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>WebDAU</title>
+		<title>TrueDAU</title>
 		<script type="text/javascript" src="gscatterjs-core.min.js"></script>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="http://momentjs.com/downloads/moment.js"></script>
 		<script type="text/javascript" src="http://dbushell.github.com/Pikaday/pikaday.js"></script>
 	</head>
 	<body>
-		<p>First please log in:</p>		
+		<script>
+		
+		</script>
+		<p>Please log in/out:</p>
+		<button onclick="login()">Login</button><br>
+		<button onclick="logout()">Logout</button>
 		<p>请输入查询网址：<p>
 		<input type="text" id="Website" value=""/><br>
 		<p>请选择查询日期：<p>
 		<input type="text" id="datepicker">
 	</body>
+	<script>
+		const network = {
+				blockchain: 'gxc',
+				protocol: 'https',
+				host: 'testnet.gxchain.org',
+				port: 443,
+				chainId: 'c2af30ef9340ff81fd61654295e98a1ff04b23189748f86727d0b26b40bb0ff4'
+			}
+
+			const requiredFields = {
+				personal: ['firstname', 'lastname', 'email', 'birthdate']
+			}
+
+			const accountNameElem = document.getElementById('accountName')
+
+			let gscatter
+			let gxc
+			let testData
+			var url = new URL(location.href)
+			const env = url.searchParams.get('env') || 'test'
+
+			testData = {
+				account1: 'neither',
+				callContractParams: ['pull', 'null', 'null']
+			}
+
+			function output() {
+				const combined = Array.from(arguments).map(arg => {
+					if (typeof arg === 'object') {
+						return JSON.stringify(arg)
+					} else {
+						return arg
+					}
+				})
+
+				console.log(...arguments)
+
+				alert(combined.join('\n--------------\n'))
+			}
+
+			function setAccountName(account) {
+				accountNameElem.innerText = account.name + ', welcome!'
+			}
+
+			function clearAccountName(account) {
+				accountNameElem.innerText = ''
+			}
+
+			GScatterJS.gscatter.connect('exampleApp').then(async connected => {
+				if (!connected) return false
+				let account
+				gscatter = GScatterJS.gscatter
+				// require version, if user's plugin is less than the version, when operate, plugin will prompt a tips
+				// gscatter.requireVersion('9.9.9')
+
+				// when user not login, you could use api which not need identity, like generateKey
+				gxc = gscatter.gxc(network)
+
+				// if identity exist, means user has authorize the website and already unlock, you could display user info then
+				if (gscatter.identity) {
+					account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc')
+					setAccountName(account)
+				}
+			})
+
+			window.login = async () => {
+				// required fields, it will appear at gscatter.identity
+				const identity = await GScatterJS.gscatter.getIdentity({ accounts: [network] })
+				if (identity) {
+					const account = gscatter.identity.accounts.find(x => x.blockchain === 'gxc')
+					setAccountName(account)
+				}
+				output(identity)
+			}
+
+			window.logout = async () => {
+				try {
+					await GScatterJS.gscatter.forgetIdentity()
+					clearAccountName()
+				} catch (err) {
+					// no identity found
+					output(err)
+				}
+			}
+
+			window.transfer = async () => {
+				// if user don't have these requiredFields, the operation would be cancel, and go to catch area
+				gxc.transfer(testData.account1, 'memo info', '1 GXC', true, { fee_symbol: 'BTC' }).then(trx => {
+					output(`transfer success`, trx)
+				}).catch(error => {
+					output(error)
+				})
+			}
+			
+			window.contract = () => {
+				gxc.callContract.apply(gxc, testData.callContractParams).then(trx => {
+					output(`call contract success`, trx)
+				}).catch(error => {
+					output(error)
+				})
+			}
+
+			window.vote = () => {
+				gxc.vote(['init0', 'init2'], 'GXC', true, { fee_symbol: 'BTC' }).then(trx => {
+					output(`vote success`, trx)
+				}).catch(error => {
+					output(error)
+				})
+			}
+
+			window.generateKey = async () => {
+				const key = await gxc.generateKey()
+				output(key)
+			}
+
+			window.queryAccount = async () => {
+				let account
+				try {
+					account = await gxc.getAccount(testData.account1)
+				} catch (err) {
+					output(err)
+					return
+				}
+
+				output(account)
+			}
+
+			window.getBalance = () => {
+				const account = gscatter.identity && gscatter.identity.accounts.find(x => x.blockchain === 'gxc')
+				if (!account) {
+					alert('没有钱包，请导入')
+				} else {
+					gxc.getAccountBalances(account.name).then(res => {
+						output(`balances`, res)
+					}).catch(err => {
+						output(err)
+					})
+				}
+			}
+
+
+			window.getIdentity = async () => {
+				const identity = await GScatterJS.gscatter.getIdentity()
+				output(identity)
+			}
+
+			window.checkExtension = () => {
+				// don't have extension
+				if (!GScatterJS.gscatter.isExtension) {
+					var flag = confirm('You haven\'t download extension, confirm to download')
+					if (flag) {
+						// if installed, nothing hapen
+						GScatterJS.openExtensionPage()
+					}
+				}
+			}
+
+			// if demo can not run, you could check this first
+			window.checkNativeDep = async () => {
+				const errors = []
+				const identity = await GScatterJS.gscatter.getIdentity()
+				if (!identity) {
+					errors.push('identity can not get')
+				}
+
+				const witness = await GScatterJS.gscatter._getWitness()
+				if (!witness) {
+					errors.push('witness can not get')
+				}
+
+				if (errors.length > 0) {
+					alert(errors.join('\n'))
+				}
+			}
+
+			window.getArbitrarySignature = async () => {
+				const publicKey = gscatter.identity.publicKey
+				try{
+					const sig = await gscatter.getArbitrarySignature(publicKey, 'max data size is 64 byte')
+					output(sig)
+				}catch(err){
+					output(err)
+				}
+			
+			}
+
+
+			///这段我写的，可能有误。
+			function getInfo(m_name, m_date) {
+				testData = {
+				account1: 'Hairtail04',
+				callContractParams: ['pull', m_name, m_date];
+				}
+				window.contract();
+			}
+    </script>
 	<script type="text/javascript" src="main.js"></script>
 	<link rel="stylesheet" href="http://dbushell.github.com/Pikaday/css/pikaday.css">
 </html>
