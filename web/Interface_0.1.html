@@ -9,16 +9,21 @@
 		<script type="text/javascript" src="http://dbushell.github.com/Pikaday/pikaday.js"></script>
 	</head>
 	<body>
-		<script>
-		
-		</script>
-		<p>Please log in/out:</p>
-		<button onclick="login()">Login</button><br>
-		<button onclick="logout()">Logout</button>
-		<p>请输入查询网址：<p>
-		<input type="text" id="Website" value=""/><br>
-		<p>请选择查询日期：<p>
-		<input type="text" id="datepicker">
+		<style>
+			div{
+				text-align: center;
+				}
+		</style>
+		<div>
+			<h1>True DAU Information System</h1>
+			<p>Please log in/out:</p>
+			<button onclick="login()">Login</button>
+			<button onclick="logout()">Logout</button>
+			<p>请输入查询网址：<p>
+			<input type="text" id="Website" value=""/><br>
+			<p>请选择查询日期：<p>
+			<input type="text" id="datepicker">
+		</div>
 	</body>
 	<script>
 		const network = {
