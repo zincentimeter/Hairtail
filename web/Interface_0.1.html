@@ -8,8 +8,48 @@
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="http://momentjs.com/downloads/moment.js"></script>
 		<script type="text/javascript" src="http://dbushell.github.com/Pikaday/pikaday.js"></script>
+		<style>
+		ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+		}
+
+		li {
+			float: left;
+		}
+
+		li a {
+			display: block;
+			color: white;
+			text-align: center;
+			padding: 6px 30px;
+			text-decoration: none;
+		}
+
+		li a:hover:not(.active) {
+			background-color: #111;
+		}
+
+		.active {
+			background-color: #4CAF50;
+		}
+		.regi {
+			background-color: #00B7A8;
+		}
+		</style>
 	</head>
 	<body>
+		<ul>
+		  <li><a class="active" href="#home">主页</a></li>
+		  <li><a href="#news">新闻</a></li>
+		  <li><a href="#contact">联系</a></li>
+		  <li><a href="#about">关于</a></li>
+		  <li style="float:right"><a class="regi" href="#register">注册</a></li>
+		</ul>
+		
 		<style>
 			body{background-image:url('memphis-mini.png');}
 			div{
@@ -17,6 +57,7 @@
 				}	
 		</style>
 		<div class="content-1">
+			<br>
 			<h1>True DAU Information System</h1><br>
 			<p>Please log in/out:</p>
 			<button onclick="login()">Login</button>
