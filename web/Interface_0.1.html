@@ -11,32 +11,37 @@
 	</head>
 	<body>
 		<style>
+			body{background-image:url('memphis-mini.png');}
 			div{
 				text-align: center;
-				}
-			
+				}	
 		</style>
 		<div class="content-1">
-			<h1>「蜀道」信息查询系统</h1>
-			<h2>True DAU Information System</h2><br>
+			<h1>True DAU Information System</h1><br>
 			<p>Please log in/out:</p>
 			<button onclick="login()">Login</button>
 			<button onclick="logout()">Logout</button>
 			<br><br><br>
-			<p>请输入查询网址：<p>
+			<p>Please enter your website<p>
 			<div class="container">
 			<form action="" class="parent">
-			<input type="text" id="Website" class="search" placeholder="查询网址" value=""/><br>
+			<input type="text" id="Website" class="search" placeholder="website" value=""/><br>
 			</form>
 			</div>
-			<p>请选择查询日期：<p>
+			<p>Please choose the date<p>
 			<div class="container">
 			<form action="" class="parent">
-			<input type="text" id="datepicker" class="search" placeholder="查询日期" value=""/><br>
+			<input type="text" id="datepicker" class="search" placeholder="date" value=""/><br>
 			</form>
-			</div>
+			</div>	
 		</div>
 	</body>
+	<footer>
+		<div class="content-2">
+		<p>True DAU | Build by Hairtail</p>
+		<p>SIST ShanghaiTech University</p>
+		</div>
+	</footer>
 	<script>
 		const network = {
 				blockchain: 'gxc',
