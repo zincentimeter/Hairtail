@@ -1,0 +1,38 @@
+@font-face{
+	font-family:"SourceHanSansCN-Medium";
+	src:url("../fonts/SourceHanSansCN-Medium.otf") format("otf");
+	font-weight: normal;
+	font-style: normal;
+}
+
+body{
+	font-size:30px;
+}
+
+content-1{
+	height: auto;
+	margin: auto 100px;
+	font-family: 'SourceHanSansCN-Medium'
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+.container {
+    height: 70px;
+    width: 800px;
+    margin: 10px auto 0 auto;
+}
+.parent {
+    position: relative;
+}
+.search {
+    width: 300px;
+    height: 40px;
+    border-radius: 18px;
+    outline: none;
+    border: 1px solid #ccc;
+    padding-left: 20px;
+    position: relative;
+}
